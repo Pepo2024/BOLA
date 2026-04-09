@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة الموظفين </title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #a855f7;
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --text-light: #f8fafc;
+            --text-dim: #94a3b8;
+            --danger: #ef4444;
+            --success: #22c55e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            padding: 20px;
+            padding-bottom: 100px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(to left, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Form Styling */
+        .form-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 12px;
+            border: 2px solid #334155;
+            background: #0f172a;
+            color: white;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.2);
+        }
+
+        button.btn-add {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button.btn-add:active {
+            transform: scale(0.95);
+        }
+
+        /* List Styling - Optimized for Mobile */
+        .employee-list h2 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .employee-card {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-right: 4px solid var(--primary-color);
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .emp-info h3 {
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        .emp-info p {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        .emp-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: none;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            color: var(--text-dim);
+            margin-top: 50px;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-users-cog"></i>مدير الموظفين  </h1>
+        </header>
+
+        <div class="form-card">
+            <div class="input-group">
+                <label>اسم الموظف</label>
+                <input type="text" id="empName" placeholder="مثلاً: أحمد محمد">
+            </div>
+            <div class="input-group">
+                <label>رقم الهاتف</label>
+                <input type="tel" id="empPhone" placeholder="01xxxxxxxxx">
+            </div>
+            <div class="input-group">
+                <label>كود الموظف (ID)</label>
+                <input type="number" id="empId" placeholder="101">
+            </div>
+            <button class="btn-add" onclick="addEmployee()">
+                <i class="fas fa-plus-circle"></i> إضافة الموظف
+            </button>
+        </div>
+
+        <div class="employee-list">
+            <h2><i class="fas fa-list-ul"></i> قائمة الموظفين</h2>
+            <div id="employeesContainer">
+                </div>
+        </div>
+    </div>
+
+    <script>
+        // مصفوفة لتخزين البيانات
+        let employees = JSON.parse(localStorage.getItem('myEmployees')) || [];
+
+        // دالة لعرض الموظفين
+        function displayEmployees() {
+            const container = document.getElementById('employeesContainer');
+            container.innerHTML = '';
+
+            if (employees.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-user-slash"></i>
+                        <p>لا يوجد موظفون مضافون حالياً</p>
+                    </div>
+                `;
+                return;
+            }
+
+            employees.forEach((emp, index) => {
+                container.innerHTML += `
+                    <div class="employee-card">
+                        <div class="emp-info">
+                            <h3>${emp.name}</h3>
+                            <p><i class="fas fa-id-badge"></i> ID: ${emp.id}</p>
+                            <p><i class="fas fa-phone"></i> ${emp.phone}</p>
+                        </div>
+                        <div class="emp-actions">
+                            <button class="btn-delete" onclick="deleteEmployee(${index})">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // دالة إضافة موظف جديد
+        function addEmployee() {
+            const name = document.getElementById('empName').value;
+            const phone = document.getElementById('empPhone').value;
+            const id = document.getElementById('empId').value;
+
+            if (name === '' || phone === '' || id === '') {
+                alert('يرجى ملء جميع الحقول!');
+                return;
+            }
+
+            const newEmployee = {
+                name: name,
+                phone: phone,
+                id: id
+            };
+
+            employees.push(newEmployee);
+            saveData();
+            displayEmployees();
+            clearInputs();
+        }
+
+        // دالة حذف موظف
+        function deleteEmployee(index) {
+            if(confirm('هل أنت متأكد من حذف هذا الموظف؟')) {
+                employees.splice(index, 1);
+                saveData();
+                displayEmployees();
+            }
+        }
+
+        // حفظ البيانات في ذاكرة المتصفح
+        function saveData() {
+            localStorage.setItem('myEmployees', JSON.stringify(employees));
+        }
+
+        // مسح الخانات بعد الإضافة
+        function clearInputs() {
+            document.getElementById('empName').value = '';
+            document.getElementById('empPhone').value = '';
+            document.getElementById('empId').value = '';
+        }
+
+        // تشغيل العرض عند فتح الصفحة
+        displayEmployees();
+    </script>
+</body>
+</html>
