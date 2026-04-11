@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>معرض فيديوهاتي الخاصة</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #050505;
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #e50914;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+        }
+
+        /* حاوية الفيديوهات - تجعلهم بجانب بعض في الشاشات الواسعة وتحت بعض في الموبايل */
+        .gallery-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            width: 100%;
+            max-width: 1400px;
+        }
+
+        .video-box {
+            flex: 1;
+            min-width: 320px; /* أقل عرض للفيديو الواحد */
+            max-width: 650px; /* أقصى عرض للفيديو الواحد */
+            background: #111;
+            padding: 10px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid #333;
+        }
+
+        video {
+            width: 100%;
+            border-radius: 10px;
+            outline: none;
+            display: block;
+        }
+
+        .video-title {
+            padding: 15px 5px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>معرض الفيديوهات</h1>
+
+    <div class="gallery-container">
+        
+        <div class="video-box">
+            <video controls>
+                <source src="VivaCut_video_1775915897452_1080HD.mp4" type="video/mp4">
+                متصفحك لا يدعم تشغيل الفيديو.
+            </video>
+            <div class="video-title">الاله الحاسبة</div>
+        </div>
+
+        <div class="video-box">
+            <video controls>
+                <source src="video2.mp4" type="video/mp4">
+                متصفحك لا يدعم تشغيل الفيديو.
+            </video>
+            <div class="video-title">الفيديو الثاني</div>
+        </div>
+
+    </div>
+
+</body>
+</html>
